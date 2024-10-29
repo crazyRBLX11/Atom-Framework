@@ -1,0 +1,2 @@
+# Build
+Do <b>NOT</b> build from this repository, due to limitations with putting scripts under ModuleScripts I've had to restructure the repository. If you build this repository and try to use it you'll only end up with errors. If you know how I could fix this please put a pull request or an issue ticket and I'll contact you via it. If you'd like to use Atom, please use a pre-built .rbxm under releases.
