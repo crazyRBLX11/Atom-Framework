@@ -14,7 +14,6 @@ local AtomMain = {}
 local AtomRoot = script.Parent.Parent
 
 local started = false
-local startComplete = false
 
 -- Make Types for tables and arrays as they don't officially have types.
 type tab = { [string] : string | boolean | Instance }
@@ -30,12 +29,7 @@ local Packages = AtomRoot:WaitForChild("Packages")
 --[[local function require(Directory:Instance, ScriptName:string)
 	return ModuleLoader.new(Directory, ScriptName)
 end ]]
-local function wait(seconds:number)
-	return task.wait(seconds)
-end
-local function Wait(duration:number)
-	return task.wait(duration)
-end
+
 local function SubTick()
 	return tick() / 2
 end
@@ -154,7 +148,7 @@ function AtomMain.Start()
 					controllerInitPromises,
 					Promise.new(function(r)
 						debug.setmemorycategory(Controller.Name)
-						local controllertouse = require(Controllers, Controller.Name)
+						local controllertouse = require(Controllers)
 						controllertouse.new()
 						controllertouse:Init()
 						r()
@@ -175,7 +169,7 @@ function AtomMain.Start()
 					controllersStartPromises,
 					Promise.new(function(r)
 						debug.setmemorycategory(controller.Name)
-						local controllertouse = require(Controllers, controller.Name)
+						local controllertouse = require(Controllers)
 						controllertouse.new()
 						controllertouse:Start()
 						r()
@@ -184,7 +178,7 @@ function AtomMain.Start()
 			end
 		end
 
-		startComplete = true
+		started = true
 		local EndTick = tick()
 		local EndSubTick = SubTick()
 		onCompletedSignal:Fire("Atom has started succesfully.")
@@ -204,7 +198,7 @@ end
 	end
 end ]]
 
-local Core = script.Parent.Core.Client
+local Core = script.Parent.Core
 
 return {
 	versiondetails = { major = 0, minor = 1, isrelease = false },

@@ -20,6 +20,7 @@ function Serializer.serialize(Buffer: buffer, offset: number, DataType: string, 
 
 		case("table")(function()
 			for i, v in ipairs(Data) do
+				print("Atom Serializer "..i)
 				Serializer.serialize(Buffer, offset, DataType, v) -- recursively serialize each element in the table
 			end
 		end),

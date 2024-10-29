@@ -18,6 +18,7 @@ local function serialize(Buffer : buffer, offset : number, DataType:string , Dat
 		end
 	elseif dataType == "table" then
 		for i, v in ipairs(Data) do
+			print("Atom Serializer "..i)
 			serialize(Buffer, offset, DataType, v) -- recursively serialize each element in the table
 		end
 	else
@@ -26,13 +27,15 @@ local function serialize(Buffer : buffer, offset : number, DataType:string , Dat
 end
 
 function ServerRemoteEvent.new(RemoteName:string, Parent:Instance)
-	local ServerRemoteEventInstance = Instance.new("RemoteEvent", Parent)
+	local ServerRemoteEventInstance = Instance.new("RemoteEvent")
+	ServerRemoteEventInstance.Parent = Parent
 	ServerRemoteEventInstance.Name = RemoteName
 	return ServerRemoteEventInstance
 end
 
 function ClientRemoteEvent.new(RemoteName:string, Parent:Instance)
-	local ClientRemoteEventInstance = Instance.new("RemoteEvent", Parent)
+	local ClientRemoteEventInstance = Instance.new("RemoteEvent")
+	ClientRemoteEventInstance.Parent = Parent
 	ClientRemoteEventInstance.Name = RemoteName
 	return ClientRemoteEventInstance
 end

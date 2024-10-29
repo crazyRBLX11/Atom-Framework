@@ -5,26 +5,7 @@
 Rewrite of my 2019-2021 framework.
 ~31/10/2023 crazyattaker1
 
-V0.1
-Started Development.
-
-V0.2
-Moved some of the code in the main script into modular code for readability.
-Added SubTicks.
-Temporarily removed my ModuleLoader as it broke intellisense.
-Added the serializer.
-
-V0.4
-Implemented the AtomMain.GetService() function,
-Implemented the AtomMain.CreateRemoteEvent() function,
-Implemented the AtomMain.CreateUnreliableEvent() function,
-Implented the Atom.GetSignal() function,
-
-V0.5
-Moved the serializer to a seperate script for modularity and added a copy of it's requirements to it.
-Fixed the cylical dependency bug in the Module Loader.
-
-Tools Used in Atom Development: VSCode Insider Edition, Argon Code Sync.
+Tools Used in Atom Development: VSCode Insider Edition, GitHub, GitHub Desktop, Git, Roblox Studio and Argon Code Sync.
 
 ]]
 
@@ -35,45 +16,27 @@ local AtomRoot = script.Parent.Parent
 AtomRoot.Parent = game:GetService("ReplicatedStorage")
 
 local started: boolean = false
-local startComplete: boolean = false
 
 -- Set Important Directories
-local Services = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
-local Controllers = AtomRoot.Controllers
-local Components = AtomRoot.Components
+local Services : Folder = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
+local Controllers : Folder  = AtomRoot.Controllers
+local Components : Folder = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
-
-local Utility = Packages.Utility
 
 -- Overwrite Functions
 local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
 --[[local function require(Directory:Instance, ScriptName:string)
 	return ModuleLoader:require(Directory, ScriptName)
-end ]]
+end ]] -- Removed while I try fix the Intellisense issues it causes.
 
 function SubTick()
 	return tick() / 2
 end
 
---[[ Currently unused as it broke intellisense. [[
-local BSON = require(Packages, "BSON")
-local ByteNet = require(Packages, "ByteNet")
-local GoodSignal = require(Packages, "GoodSignal")
-local Janitor = require(Packages, "Janitor")
-local Promise = require(Packages, "Promise")
-local Proto = require(Packages, "proto")
-local ProfileService = require(Packages, "ProfileService")
-local Sourceesque = require(Packages, "Sourceesque")
-local Warp = require(Packages, "Warp")
-local RestrictRead = require(Utility, "restrictRead")
-local Switch, case, default = unpack(require(Packages, "Switch")) ]]
-
-local BSON = require(Packages.BSON)
 local ByteNet = require(Packages.ByteNet)
 local GoodSignal = require(Packages.GoodSignal)
 local Janitor = require(Packages.Janitor)
 local Promise = require(Packages.Promise)
-local Proto = require(Packages.proto)
 local ProfileService = require(Packages.ProfileService)
 local Sourceesque = require(Packages.Sourceesque)
 local Warp = require(Packages.Warp)
@@ -115,6 +78,11 @@ function Clean(WorkingJanitor)
 	return "Cleaned."
 end
 
+function AtomMain.Clean(WorkingJanitor)
+	WorkingJanitor:Cleanup()
+	return "Cleaned."
+end
+
 --[[
 Start the framework.
 
@@ -130,12 +98,10 @@ Atom.Start()
 ]]
 function AtomMain.Start()
 	if started then return Promise.reject("Atom has already started.") end
-	if _VERSION ~= "Luau" then ErrorSignal:Fire("Running on an External Lua Runtime.") return end
+	if _VERSION ~= "Luau" then ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") return end
 
 	local StartTick = tick()
 	local StartSubTick = SubTick()
-
-	started = true
 
 	return Promise.new(function(resolve)
 		-- Create a Janitor to clean unneeded files post setup.
@@ -161,10 +127,8 @@ function AtomMain.Start()
 			if CurrentFolderItterations < MaxFolderItterations then
 				CurrentFolderItterations = CurrentFolderItterations + 1
 				print("Currently on the " .. CurrentFolderItterations .. " itteration.")
-				if v:IsA("Folder") then -- If it's a Folder, continue.
+				if v:IsA("Folder") then
 					if v:GetAttribute("Cleanable") ~= false then
-						-- Reads through the directory to find any files to be moved before
-						-- preparing it to be cleaned.
 						for _, scriptObject in pairs(v:GetChildren()) do
 							InitJanitor:Add(v)
 						end
@@ -196,24 +160,7 @@ function AtomMain.Start()
 		print(Clean(InitJanitor))
 		resolve(Promise.all(servicesInitPromises))
 	end):andThen(function()
-		--[[local servicesStartPromises = {}
-
-		for _, service in ipairs(Services:GetDescendants()) do
-			if service:IsA("ModuleScript") and service.Name:match("Service$") then
-				table.insert(
-					servicesStartPromises,
-					Promise.new(function(r)
-						debug.setmemorycategory(service.Name)
-						local servicetouse = require(Services:WaitForChild(service.Name))
-						local serviceClass = servicetouse.new()
-						serviceClass:Start()
-						r()
-					end)
-				)
-			end
-		end ]]
-
-		startComplete = true
+		started = true
 		local EndTick = tick()
 		local EndSubTick = SubTick()
 		onCompletedSignal:Fire("Atom has started succesfully.")
