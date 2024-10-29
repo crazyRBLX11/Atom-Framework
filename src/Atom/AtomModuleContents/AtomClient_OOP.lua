@@ -201,7 +201,7 @@ end ]]
 local Core = script.Parent.Core
 
 return {
-	versiondetails = { major = 0, minor = 1, isrelease = false },
+	versiondetails = { major = 0, minor = 6, isrelease = false },
 	AtomRoot = AtomRoot,
 	Main = AtomMain
 }
