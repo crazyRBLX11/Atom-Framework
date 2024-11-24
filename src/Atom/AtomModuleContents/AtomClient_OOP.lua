@@ -21,7 +21,7 @@ type array<typ> = { [number] : typ }
 
 -- Set Important Directories
 local Controllers = AtomRoot.Controllers
-local Components = AtomRoot.Components
+-- local Components = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
 
 -- Overwrite Functions
@@ -34,58 +34,18 @@ local function SubTick()
 	return tick() / 2
 end
 
--- Load all the Packages into Memory.
---[[
-local BSON = require(Packages, "BSON")
-local GoodSignal = require(Packages, "GoodSignal")
-local Janitor = require(Packages, "Janitor")
-local PartCache = require(Packages, "PartCache")
-local Promise = require(Packages, "Promise")
-local Proto = require(Packages, "proto")
-local ProfileService = require(Packages, "ProfileService")
-local Sourceesque = require(Packages, "Sourceesque")
-local Warp = require(Packages, "Warp") ]]
-
 local GoodSignal = require(Packages.GoodSignal)
 local Janitor = require(Packages.Janitor)
 local Promise = require(Packages.Promise)
-local Switch, case, default = unpack(require(Packages.Switch))
-
-function serialize(Buffer: buffer, offset: number, DataType: string, Data)
-	local dataType = string.lower(DataType)
-
-	Switch(Data)({
-		case("number")(function()
-			buffer.writef64(Buffer, offset * math.random(1, 34), Data)
-		end),
-
-		case("string")(function()
-			if #Data <= 1024 then -- each character takes 1 byte
-				buffer.writestring(Buffer, 0, Data)
-			else
-				return warn("Data is too large for the buffer.")
-			end
-		end),
-
-		case("table")(function()
-			for i, v in ipairs(Data) do
-				serialize(Buffer, offset, DataType, v) -- recursively serialize each element in the table
-			end
-		end),
-
-		default()(function()
-			return warn("Unsupported Data Type.")
-		end),
-	})
-end
 
 -- Make references for Repositories.
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = AtomRoot.AtomRemotes
 
-local onCompletedSignal = Instance.new("BindableEvent", Remotes.BindableEvents)
+local onCompletedSignal = Instance.new("BindableEvent")
 onCompletedSignal.Name = "onCompleted"
+onCompletedSignal.Parent = Remotes.BindableEvents
 local ErrorSignal = GoodSignal.new()
 
 -- DRY Signal Handler.
@@ -128,8 +88,15 @@ Origin:Init()
 
 ]]
 function AtomMain.Start()
-	if started then return Promise.reject("Atom has already started.") end
-	if _VERSION ~= "Luau" then ErrorSignal:Fire("Running on an External Lua Runtime.") return end
+	if _VERSION ~= "Luau" then 
+		ErrorSignal:Fire("Running on an External Lua Runtime.") 
+		return 
+	end
+	if started then 
+		return Promise.reject("Atom has already started.") 
+	end
+
+	local InitJanitor = Janitor.new()
 
 	local StartTick = tick()
 	local StartSubTick = SubTick()
@@ -138,7 +105,6 @@ function AtomMain.Start()
 
 	return Promise.new(function(resolve)
 		-- Create a Janitor to clean unneeded files post setup.
-		local InitJanitor = Janitor.new()
 
 		local controllerInitPromises = {}
 
@@ -179,6 +145,7 @@ function AtomMain.Start()
 		end
 
 		started = true
+		InitJanitor:Add(controllersStartPromises)
 		local EndTick = tick()
 		local EndSubTick = SubTick()
 		onCompletedSignal:Fire("Atom has started succesfully.")
@@ -203,5 +170,6 @@ local Core = script.Parent.Core
 return {
 	versiondetails = { major = 0, minor = 6, isrelease = false },
 	AtomRoot = AtomRoot,
+	Core = Core,
 	Main = AtomMain
 }
