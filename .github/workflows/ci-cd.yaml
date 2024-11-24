@@ -9,8 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: "install aftman"
+        run: ./aftman self-install
+
       - name: "aftman install"
-        run: aftman install
+        run: ./aftman install
 
       - name: "lint"
         run: selene src
