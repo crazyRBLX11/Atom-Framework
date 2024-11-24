@@ -5,7 +5,7 @@ ServerRemoteEvent.__index = ServerRemoteEvent
 
 local RunService = game:GetService("RunService")
 
-local function serialize(Buffer : buffer, offset : number, DataType:string , Data)
+local function serialize(Buffer: buffer, offset: number, DataType: string, Data)
 	local dataType = string.lower(DataType)
 
 	if dataType == "number" then
@@ -18,7 +18,7 @@ local function serialize(Buffer : buffer, offset : number, DataType:string , Dat
 		end
 	elseif dataType == "table" then
 		for i, v in ipairs(Data) do
-			print("Atom Serializer "..i)
+			print("Atom Serializer " .. i)
 			serialize(Buffer, offset, DataType, v) -- recursively serialize each element in the table
 		end
 	else
@@ -26,21 +26,21 @@ local function serialize(Buffer : buffer, offset : number, DataType:string , Dat
 	end
 end
 
-function ServerRemoteEvent.new(RemoteName:string, Parent:Instance)
+function ServerRemoteEvent.new(RemoteName: string, Parent: Instance)
 	local ServerRemoteEventInstance = Instance.new("RemoteEvent")
 	ServerRemoteEventInstance.Parent = Parent
 	ServerRemoteEventInstance.Name = RemoteName
 	return ServerRemoteEventInstance
 end
 
-function ClientRemoteEvent.new(RemoteName:string, Parent:Instance)
+function ClientRemoteEvent.new(RemoteName: string, Parent: Instance)
 	local ClientRemoteEventInstance = Instance.new("RemoteEvent")
 	ClientRemoteEventInstance.Parent = Parent
 	ClientRemoteEventInstance.Name = RemoteName
 	return ClientRemoteEventInstance
 end
 
-function ServerRemoteEvent:FireClient(player:Player, Remote:RemoteEvent, Data:any)
+function ServerRemoteEvent:FireClient(player: Player, Remote: RemoteEvent, Data: any)
 	Remote:FireClient(player, Data)
 end
 

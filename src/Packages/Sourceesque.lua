@@ -11,12 +11,12 @@
 ---- Settings ----
 
 type BaseValues = number | Vector3
-export type ValueWrapper = () -> (BaseValues)
+export type ValueWrapper = () -> BaseValues
 export type SupportedValues = BaseValues & ValueWrapper
 
 local TRUE = 0b1
 local FALSE = 0b0
-local NAN = 0/0
+local NAN = 0 / 0
 local NAN_VECTOR = Vector3.new(NAN, NAN, NAN)
 
 local COMPRESSION_TYPES = {
@@ -29,13 +29,13 @@ local COMPRESSION_TYPES = {
 	Integer = "j",
 	UnsignedByte = "B",
 	UnsignedShort = "H",
-	UnsignedInteger = "J"
+	UnsignedInteger = "J",
 }
 
 ---- Constants ----
 
 local Utility = {
-	CompressionTypes = COMPRESSION_TYPES
+	CompressionTypes = COMPRESSION_TYPES,
 }
 
 ---- Variables ----
@@ -58,13 +58,13 @@ end
 
 ---- Public Functions ----
 
-function Utility.Always(Value: BaseValues): () -> (BaseValues)
+function Utility.Always(Value: BaseValues): () -> BaseValues
 	return function()
 		return Value
 	end
 end
 
-function Utility.ReconcileWithDeltaTable(DeltaTable: {BaseValues}, BaseTable: {BaseValues})
+function Utility.ReconcileWithDeltaTable(DeltaTable: { BaseValues }, BaseTable: { BaseValues })
 	for Index, BaseValue in BaseTable do
 		local DeltaValue = DeltaTable[Index]
 		if type(BaseValue) == "number" then
@@ -77,7 +77,7 @@ function Utility.ReconcileWithDeltaTable(DeltaTable: {BaseValues}, BaseTable: {B
 					DeltaValue.X ~= DeltaValue.X and BaseValue.X or DeltaValue.X,
 					DeltaValue.Y ~= DeltaValue.Y and BaseValue.Y or DeltaValue.Y,
 					DeltaValue.Z ~= DeltaValue.Z and BaseValue.Z or DeltaValue.Z
-				) 
+				)
 			end
 		end
 
@@ -85,7 +85,7 @@ function Utility.ReconcileWithDeltaTable(DeltaTable: {BaseValues}, BaseTable: {B
 	end
 end
 
-function Utility.CreateCompressionTable(Types: {string})
+function Utility.CreateCompressionTable(Types: { string })
 	local Format = table.concat(Types)
 	local RawTypes = Types
 	local DeltaFormat = GetDeltaFormat(#Format)
@@ -95,10 +95,10 @@ function Utility.CreateCompressionTable(Types: {string})
 	return {
 		Size = string.packsize(DeltaFormat .. Format),
 
-		Compress = function(Values: {SupportedValues}, PreviousValues: {BaseValues}): (string, number)
+		Compress = function(Values: { SupportedValues }, PreviousValues: { BaseValues }): (string, number)
 			local Stream = ""
 			local StreamFormat = ""
-			local ChangedValues: {BaseValues} = table.create(#Values)
+			local ChangedValues: { BaseValues } = table.create(#Values)
 
 			--> Remove wrappers
 			for Index, Value in Values do
@@ -107,7 +107,7 @@ function Utility.CreateCompressionTable(Types: {string})
 					Values[Index] = Raw
 					if PreviousValues then
 						PreviousValues[Index] = GetSubstituteType(Raw)
-					end 
+					end
 				end
 			end
 
@@ -151,16 +151,16 @@ function Utility.CreateCompressionTable(Types: {string})
 					VectorBits += bit32.lshift(ZBit, 2)
 
 					--> Insert changed axes
-					if XBit == TRUE then 
-						table.insert(ChangedValues, Current.X) 
+					if XBit == TRUE then
+						table.insert(ChangedValues, Current.X)
 					end
 
-					if YBit == TRUE then 
-						table.insert(ChangedValues, Current.Y) 
+					if YBit == TRUE then
+						table.insert(ChangedValues, Current.Y)
 					end
 
-					if ZBit == TRUE then 
-						table.insert(ChangedValues, Current.Z) 
+					if ZBit == TRUE then
+						table.insert(ChangedValues, Current.Z)
 					end
 
 					--> Add to delta bits & update format
@@ -172,7 +172,7 @@ function Utility.CreateCompressionTable(Types: {string})
 					TypeCursor += 1
 					DeltaCursor += 1
 
-					if HasValueChanged then 
+					if HasValueChanged then
 						StreamFormat ..= Types[TypeCursor]
 						table.insert(ChangedValues, Current)
 					end
@@ -185,12 +185,12 @@ function Utility.CreateCompressionTable(Types: {string})
 			return Stream, string.packsize(DeltaFormat .. StreamFormat)
 		end,
 
-		Decompress = function(Stream: string): ({BaseValues}, number)
+		Decompress = function(Stream: string): ({ BaseValues }, number)
 			local StreamFormat = ""
 
-			local Values: {BaseValues} = table.create(#Types, NAN)
-			local ValueIndices: {number} = {}
-			local VectorIndices: {number} = {}
+			local Values: { BaseValues } = table.create(#Types, NAN)
+			local ValueIndices: { number } = {}
+			local VectorIndices: { number } = {}
 
 			--> Construct stream format from delta compressed portion
 			local Offset = 0
@@ -218,7 +218,7 @@ function Utility.CreateCompressionTable(Types: {string})
 					if YBit == TRUE then
 						StreamIndex += 1
 						ValueIndices[StreamIndex] = ValueIndex + 1
-					end                    
+					end
 
 					if ZBit == TRUE then
 						StreamIndex += 1
@@ -238,7 +238,7 @@ function Utility.CreateCompressionTable(Types: {string})
 			end
 
 			--> Unpack the compressed stream, read with X bytes offset (first X bytes are used by the delta compression)
-			local UnpackedValues = {string.unpack(StreamFormat, Stream, DeltaFormatOffset)}
+			local UnpackedValues = { string.unpack(StreamFormat, Stream, DeltaFormatOffset) }
 
 			--> Remove the extra value returned by string.unpack
 			UnpackedValues[#UnpackedValues] = nil
@@ -254,11 +254,11 @@ function Utility.CreateCompressionTable(Types: {string})
 					Values[ReadIndex] :: number,
 					table.remove(Values, ReadIndex + 1) :: number,
 					table.remove(Values, ReadIndex + 1) :: number
-				)          
+				)
 			end
 
 			return Values, string.packsize(DeltaFormat .. StreamFormat)
-		end
+		end,
 	}
 end
 

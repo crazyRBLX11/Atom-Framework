@@ -8,7 +8,7 @@ Tools Used in Atom Development: VSCode Insider Edition, Argon Code Sync.
 
 ]]
 
--- Initialize the Module Script table to allow external access 
+-- Initialize the Module Script table to allow external access
 -- to the API and making a reference to where everything SHOULD be stored.
 local AtomMain = {}
 local AtomRoot = script.Parent.Parent
@@ -16,8 +16,8 @@ local AtomRoot = script.Parent.Parent
 local started = false
 
 -- Make Types for tables and arrays as they don't officially have types.
-type tab = { [string] : string | boolean | Instance }
-type array<typ> = { [number] : typ }
+type tab = { [string]: string | boolean | Instance }
+type array<typ> = { [number]: typ }
 
 -- Set Important Directories
 local Controllers = AtomRoot.Controllers
@@ -91,12 +91,12 @@ Origin:Init()
 
 ]]
 function AtomMain.Start()
-	if _VERSION ~= "Luau" then 
-		ErrorSignal:Fire("Running on an External Lua Runtime.") 
-		return 
+	if _VERSION ~= "Luau" then
+		ErrorSignal:Fire("Running on an External Lua Runtime.")
+		return
 	end
-	if started then 
-		return Promise.reject("Atom has already started.") 
+	if started then
+		return Promise.reject("Atom has already started.")
 	end
 
 	local InitJanitor = Janitor.new()
@@ -153,8 +153,8 @@ function AtomMain.Start()
 		local EndSubTick = SubTick()
 		onCompletedSignal:Fire("Atom has started succesfully.")
 		local InitTick = tostring(EndTick - StartTick)
-		local InitSubTick = tostring(EndSubTick - StartSubTick)		
-		print("Atom Started with a tick of "..InitTick.." and a sub tick of "..InitSubTick..".")
+		local InitSubTick = tostring(EndSubTick - StartSubTick)
+		print("Atom Started with a tick of " .. InitTick .. " and a sub tick of " .. InitSubTick .. ".")
 	end)
 end
 
@@ -174,5 +174,5 @@ return {
 	versiondetails = { major = 0, minor = 6, isrelease = false },
 	AtomRoot = AtomRoot,
 	Core = Core,
-	Main = AtomMain
+	Main = AtomMain,
 }

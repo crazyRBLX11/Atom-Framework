@@ -18,16 +18,17 @@ AtomRoot.Parent = game:GetService("ReplicatedStorage")
 local started: boolean = false
 
 -- Set Important Directories
-local Services : Folder = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
-local Controllers : Folder  = AtomRoot.Controllers
-local Components : Folder = AtomRoot.Components
+local Services: Folder = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
+local Controllers: Folder = AtomRoot.Controllers
+local Components: Folder = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
 
 -- Overwrite Functions
 -- local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
 --[[local function require(Directory:Instance, ScriptName:string)
 	return ModuleLoader:require(Directory, ScriptName)
-end ]] -- Removed while I try fix the Intellisense issues it causes.
+end ]]
+-- Removed while I try fix the Intellisense issues it causes.
 
 function SubTick()
 	return tick() / 2
@@ -98,12 +99,12 @@ Atom.Start()
 
 ]]
 function AtomMain.Start()
-	if started then 
-		return Promise.reject("Atom has already started.") 
+	if started then
+		return Promise.reject("Atom has already started.")
 	end
-	if _VERSION ~= "Luau" then 
-		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") 
-		return 
+	if _VERSION ~= "Luau" then
+		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.")
+		return
 	end
 
 	local StartTick = tick()
@@ -181,8 +182,8 @@ end
 function AtomMain.GetService(ServiceName: string)
 	for i, v in ipairs(Services:GetChildren()) do
 		print(i)
-		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then 
-			continue 
+		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then
+			continue
 		end
 		return require(Services:WaitForChild(ServiceName))
 	end
@@ -201,7 +202,7 @@ function AtomMain.CreateUnreliableRemoteEvent(RemoteName: string)
 end
 
 function AtomMain.GetSignal(SignalName: string, SignalType: string)
-	return Remotes:WaitForChild(SignalType.."s"):FindFirstChild(SignalName)
+	return Remotes:WaitForChild(SignalType .. "s"):FindFirstChild(SignalName)
 end
 
 local Core = script.Parent.Core
@@ -215,5 +216,5 @@ return {
 	Badges = require(Core.Badges),
 	DataStores = require(Core.DataStore).DataStores,
 	MemoryStoreOperations = require(Core.MemoryStoreOperations),
-	Serializer = require(Core.Serializer)
+	Serializer = require(Core.Serializer),
 }

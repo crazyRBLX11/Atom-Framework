@@ -2,9 +2,9 @@
 -- Written by crazyattaker1. 29/10/2024. Lightweight RichText Implementation.
 local TextLib = {}
 
-type Properties = { Bold:boolean, StrikeThrough:boolean, Underline:boolean, Italics:boolean }
+type Properties = { Bold: boolean, StrikeThrough: boolean, Underline: boolean, Italics: boolean }
 
-function TextLib.Update(Text:string, PropertiesTable:Properties)
+function TextLib.Update(Text: string, PropertiesTable: Properties)
 	local BoldPrefix = ""
 	local BoldSuffix = ""
 	local StrikePrefix = ""
@@ -30,7 +30,15 @@ function TextLib.Update(Text:string, PropertiesTable:Properties)
 		ItalicsSuffix = "</i>"
 	end
 	task.wait(1)
-	return BoldPrefix..StrikePrefix..UnderlinePrefix..ItalicsPrefix..Text..ItalicsSuffix..UnderlineSuffix..StrikeSuffix..BoldSuffix
+	return BoldPrefix
+		.. StrikePrefix
+		.. UnderlinePrefix
+		.. ItalicsPrefix
+		.. Text
+		.. ItalicsSuffix
+		.. UnderlineSuffix
+		.. StrikeSuffix
+		.. BoldSuffix
 end
 
 return TextLib

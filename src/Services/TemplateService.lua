@@ -10,7 +10,7 @@ function Template.new()
 	function self.Start()
 		print("Atom TemplateService started.")
 	end
-	
+
 	return self
 end
 

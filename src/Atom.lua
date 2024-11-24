@@ -7,6 +7,6 @@ else
 	if AtomServer and RunService:IsRunning() then
 		AtomServer:Destroy()
 	end
-	
+
 	return require(script:FindFirstChild("AtomClient_OOP", true))
 end
