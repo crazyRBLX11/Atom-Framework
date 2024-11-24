@@ -24,7 +24,7 @@ local Components : Folder = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
 
 -- Overwrite Functions
-local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
+-- local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
 --[[local function require(Directory:Instance, ScriptName:string)
 	return ModuleLoader:require(Directory, ScriptName)
 end ]] -- Removed while I try fix the Intellisense issues it causes.
@@ -33,14 +33,14 @@ function SubTick()
 	return tick() / 2
 end
 
-local ByteNet = require(Packages.ByteNet)
+-- local ByteNet = require(Packages.ByteNet)
 local GoodSignal = require(Packages.GoodSignal)
 local Janitor = require(Packages.Janitor)
 local Promise = require(Packages.Promise)
-local ProfileService = require(Packages.ProfileService)
-local Sourceesque = require(Packages.Sourceesque)
-local Warp = require(Packages.Warp)
-local Switch, case, default = unpack(require(Packages.Switch))
+-- local ProfileService = require(Packages.ProfileService)
+-- local Sourceesque = require(Packages.Sourceesque)
+-- local Warp = require(Packages.Warp)
+-- local Switch, case, default = unpack(require(Packages.Switch))
 
 -- Make references for Repositories.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -48,8 +48,9 @@ local ServerStorage = game:GetService("ServerStorage")
 
 local Remotes = AtomRoot.AtomRemotes
 
-local onCompletedSignal = Instance.new("BindableEvent", Remotes.BindableEvents)
+local onCompletedSignal = Instance.new("BindableEvent")
 onCompletedSignal.Name = "onCompleted"
+onCompletedSignal.Parent = Remotes.BindableEvents
 local ErrorSignal = GoodSignal.new()
 
 -- DRY Signal Handler.
@@ -97,8 +98,13 @@ Atom.Start()
 
 ]]
 function AtomMain.Start()
-	if started then return Promise.reject("Atom has already started.") end
-	if _VERSION ~= "Luau" then ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") return end
+	if started then 
+		return Promise.reject("Atom has already started.") 
+	end
+	if _VERSION ~= "Luau" then 
+		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") 
+		return 
+	end
 
 	local StartTick = tick()
 	local StartSubTick = SubTick()
@@ -120,6 +126,7 @@ function AtomMain.Start()
 		local MaxFolderItterations = 4
 		local CurrentFolderItterations = 0
 		for i, v in ipairs(AtomRoot:GetChildren()) do
+			print(i)
 			if CurrentFolderItterations >= MaxFolderItterations then
 				break
 			end
@@ -130,6 +137,7 @@ function AtomMain.Start()
 				if v:IsA("Folder") then
 					if v:GetAttribute("Cleanable") ~= false then
 						for _, scriptObject in pairs(v:GetChildren()) do
+							scriptObject:Destroy()
 							InitJanitor:Add(v)
 						end
 					end
@@ -172,7 +180,10 @@ end
 
 function AtomMain.GetService(ServiceName: string)
 	for i, v in ipairs(Services:GetChildren()) do
-		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then continue end
+		print(i)
+		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then 
+			continue 
+		end
 		return require(Services:WaitForChild(ServiceName))
 	end
 end
