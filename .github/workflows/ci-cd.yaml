@@ -11,13 +11,14 @@ jobs:
     steps:
       - uses: ok-nick/setup-aftman@v0.4.2
         with:
-          version: v0.3.0 # name of git tag in aftman (uses latest tag by default)
-          path: "." # path to project dir containing `aftman.toml` ("." (current dir) by default)
-          cache: false # whether to enable binary caching between runs (false by default)
-          token: ${{ github.token }} # GitHub token to bypass rate limit (${{ github.token }} set by default)
-
+          version: v0.3.0
+          path: "."
+          cache: false
+          token: ${{ github.token }}
+              
       - name: "aftman install"
         run: aftman install
 
-      - name: "lint"
-        run: selene src
+      - uses: NTBBloodbath/selene-action@v0.4.2
+        with:
+          token: ${{ github.token }}
