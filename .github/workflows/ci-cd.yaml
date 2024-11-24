@@ -9,8 +9,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: "install aftman"
-        run: aftman self-install
+      - uses: ok-nick/setup-aftman@v0.4.2
+      with:
+        version: v1.0.0 # name of git tag in aftman (uses latest tag by default)
+        path: some_dir/my_project # path to project dir containing `aftman.toml` ("." (current dir) by default)
+        cache: false # whether to enable binary caching between runs (false by default)
+        token: ${{ github.token }} # GitHub token to bypass rate limit (${{ github.token }} set by default)
 
       - name: "aftman install"
         run: ./aftman install
