@@ -4,7 +4,7 @@ local Serializer = {}
 
 function Serializer.serialize(Buffer: buffer, offset: number, DataType: string, Data)
 	local dataType = string.lower(DataType)
-
+	print(dataType)
 	Switch(Data)({
 		case("number")(function()
 			buffer.writef64(Buffer, offset * math.random(1, 34), Data)

@@ -26,7 +26,11 @@ end
 
 function MemoryStoreOperations:GetMemoryIdentifier(Queue:MemoryStoreQueue, count:number, allOrNothing:boolean, waitTimeout:number)
 	local results, identifier = Queue:ReadAsync(count, allOrNothing, waitTimeout)
-	return identifier
+	if not results then
+		return nil
+	else
+		return identifier
+	end
 end
 
 function MemoryStoreOperations:RemoveFromMemoryStoreQueue(Queue:MemoryStoreQueue, Identifier:string)
@@ -41,27 +45,32 @@ end
 function MemoryStoreOperations:ReadFromMemoryStoreQueue(Queue:MemoryStoreQueue, count:number, allOrNothing:boolean, waitTimeout:number)
 	local results = nil
 	local success, errormessage = pcall(function()
-		local results, identifier = Queue:ReadAsync(count, allOrNothing, waitTimeout)
+		results = Queue:ReadAsync(count, allOrNothing, waitTimeout)
 	end)
 	if success then
 		return results
 	elseif not success then
-		return "Error reading MemoryStoreQueue. "..errormessage
+		warn("Error reading MemoryStoreQueue. "..errormessage)
+		return nil
 	else
-		return "Error with function. "..errormessage
+		warn("Error with function "..errormessage)
+		return nil
 	end
 end
 
 function MemoryStoreOperations:ReadFromSortedMap(SortedMap:MemoryStoreSortedMap, Key:string)
+	local SortedMapData = nil
 	local success, errormessage = pcall(function()
-		SortedMap:GetAsync(Key)
+		SortedMapData = SortedMap:GetAsync(Key)
 	end)
 	if success then
-		return SortedMap:GetAsync(Key)
+		return SortedMapData
 	elseif not success then
 		warn("Error getting Value! "..errormessage)
+		return nil
 	else
 		warn("Error with function! "..errormessage)
+		return nil
 	end
 end
 

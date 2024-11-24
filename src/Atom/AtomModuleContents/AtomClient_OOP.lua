@@ -69,9 +69,12 @@ end ]]
 
 function Clean(WorkingJanitor)
 	WorkingJanitor:Cleanup()
-	print("Memory Usage: "..collectgarbage('count').."kb")
-	print("Memory Usage: "..collectgarbage('count') * 1024, "B")
-	return "Cleaned"
+	return "Cleaned."
+end
+
+function AtomMain.Clean(WorkingJanitor)
+	WorkingJanitor:Cleanup()
+	return "Cleaned."
 end
 
 --[[
