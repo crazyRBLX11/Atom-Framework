@@ -21,7 +21,10 @@ jobs:
               
       - name: "aftman install"
         run: aftman install
-
+  
+  lint:
+    runs-on: ubuntu-latest
+    steps:
       - uses: NTBBloodbath/selene-action@v1.0.0
         with:
           token: ${{ github.token }}
