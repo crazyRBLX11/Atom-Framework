@@ -23,6 +23,7 @@ jobs:
         run: aftman install
   
   StyLua:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +36,8 @@ jobs:
           # CLI arguments
           args: --syntax="Luau" src
 
-  lint:
+  Selene:
+    needs: StyLua
     runs-on: ubuntu-latest
     steps:
       - name: Checkout    
