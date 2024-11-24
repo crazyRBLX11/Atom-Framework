@@ -17,7 +17,7 @@ jobs:
           token: ${{ github.token }} # GitHub token to bypass rate limit (${{ github.token }} set by default)
 
       - name: "aftman install"
-        run: ./aftman install
+        run: aftman install
 
       - name: "lint"
         run: selene src
