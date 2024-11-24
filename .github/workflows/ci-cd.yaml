@@ -1,0 +1,14 @@
+name: Atom Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: lint
+      run: selene src
