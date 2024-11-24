@@ -19,6 +19,6 @@ jobs:
       - name: "aftman install"
         run: aftman install
 
-      - uses: NTBBloodbath/selene-action@v0.3.2
+      - uses: NTBBloodbath/selene-action@v1.0.0
         with:
           token: ${{ github.token }}
