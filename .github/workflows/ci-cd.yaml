@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "install aftman"
-        run: ./aftman self-install
+        run: aftman self-install
 
       - name: "aftman install"
         run: ./aftman install
