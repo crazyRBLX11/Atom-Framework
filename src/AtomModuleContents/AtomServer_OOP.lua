@@ -42,13 +42,6 @@ local Promise = require(Packages.Promise)
 -- local Warp = require(Packages.Warp)
 -- local Switch, case, default = unpack(require(Packages.Switch))
 
-local function CreateService(Name)
-	local Service = Instance.new('Actor')
-	Service.Name = Name
-	Service.Parent = game
-	return Service
-end
-
 -- Make references for Repositories.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
