@@ -18,17 +18,16 @@ AtomRoot.Parent = game:GetService("ReplicatedStorage")
 local started: boolean = false
 
 -- Set Important Directories
-local Services: Folder = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
-local Controllers: Folder = AtomRoot.Controllers
-local Components: Folder = AtomRoot.Components
+local Services : Folder = AtomRoot.Services -- Needed for custom require and it will be needed further in the script.
+local Controllers : Folder  = AtomRoot.Controllers
+local Components : Folder = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
 
 -- Overwrite Functions
 -- local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
 --[[local function require(Directory:Instance, ScriptName:string)
 	return ModuleLoader:require(Directory, ScriptName)
-end ]]
--- Removed while I try fix the Intellisense issues it causes.
+end ]] -- Removed while I try fix the Intellisense issues it causes.
 
 function SubTick()
 	return tick() / 2
@@ -43,9 +42,19 @@ local Promise = require(Packages.Promise)
 -- local Warp = require(Packages.Warp)
 -- local Switch, case, default = unpack(require(Packages.Switch))
 
+local function CreateService(Name)
+	local Service = Instance.new('Actor')
+	Service.Name = Name
+	Service.Parent = game
+	return Service
+end
+
 -- Make references for Repositories.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
+local ServicesService = Instance.new('Actor')
+ServicesService.Name = "ServicesService"
+ServicesService.Parent = game
 
 local Remotes = AtomRoot.AtomRemotes
 
@@ -99,12 +108,12 @@ Atom.Start()
 
 ]]
 function AtomMain.Start()
-	if started then
-		return Promise.reject("Atom has already started.")
+	if started then 
+		return Promise.reject("Atom has already started.") 
 	end
-	if _VERSION ~= "Luau" then
-		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.")
-		return
+	if _VERSION ~= "Luau" then 
+		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") 
+		return 
 	end
 
 	local StartTick = tick()
@@ -154,8 +163,10 @@ function AtomMain.Start()
 					servicesInitPromises,
 					Promise.new(function(r)
 						debug.setmemorycategory(service.Name)
-						local servicetouse = require(Services:WaitForChild(service.Name))
-						local serviceClass = servicetouse.new()
+						local servicetouse = Services:WaitForChild(service.Name)
+						servicetouse.Parent = ServicesService
+						local required = require(servicetouse)
+						local serviceClass = required.new()
 						serviceClass:Init()
 						task.wait()
 						serviceClass:Start()
@@ -180,10 +191,10 @@ function AtomMain.Start()
 end
 
 function AtomMain.GetService(ServiceName: string)
-	for i, v in ipairs(Services:GetChildren()) do
+	for i, v in ipairs(ServicesService:GetChildren()) do
 		print(i)
-		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then
-			continue
+		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then 
+			continue 
 		end
 		return require(Services:WaitForChild(ServiceName))
 	end
@@ -202,13 +213,13 @@ function AtomMain.CreateUnreliableRemoteEvent(RemoteName: string)
 end
 
 function AtomMain.GetSignal(SignalName: string, SignalType: string)
-	return Remotes:WaitForChild(SignalType .. "s"):FindFirstChild(SignalName)
+	return Remotes:WaitForChild(SignalType.."s"):FindFirstChild(SignalName)
 end
 
 local Core = script.Parent.Core
 
 return {
-	versiondetails = { major = 0, minor = 6, isrelease = false },
+	versiondetails = { major = 0, minor = 9, isrelease = false },
 	AtomRoot = AtomRoot,
 	Core = AtomRoot.Atom.Core,
 	Util = AtomRoot.Atom.Utils,
@@ -216,5 +227,5 @@ return {
 	Badges = require(Core.Badges),
 	DataStores = require(Core.DataStore).DataStores,
 	MemoryStoreOperations = require(Core.MemoryStoreOperations),
-	Serializer = require(Core.Serializer),
+	Serializer = require(Core.Serializer)
 }
