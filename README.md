@@ -13,3 +13,6 @@ Atom was designed to do all the heavy work for multi module codebases. Some of t
 * Out-of-the-box Networking - A custom developed network solution that doesn't rely on Roblox remotes.
 * Automatic error handling - Allow Atom to automatically deal with errors or tell it what to do when an error occurs.
 * Automatic Garbage Collection - Atom uses the Janitor module to clean up instances when they're no longer needed.
+
+## Building Atom's source code
+Do <b>NOT</b> build from this repository, due to limitations with putting scripts under ModuleScripts I've had to structure the repository entirely different than how Atom thinks it's structured. If you build this repository and try to use it nothing will work. If you know how I could fix this please put a pull request or an issue ticket and I'll contact you via it. If you'd like to use Atom, please use a pre-built .rbxm under releases.
