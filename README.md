@@ -1,5 +1,6 @@
 # Atom Framework
-An easy to implement Roblox framework.
+[![Lua](https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white)](#) [![Markdown](https://img.shields.io/badge/Markdown-%23000000.svg?logo=markdown&logoColor=white)](#) [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
+<br /> An easy to implement Roblox framework.
 
 ## Introduction
 The Atom Framework is an open-source framework used for crazyattaker1's games on Roblox.
