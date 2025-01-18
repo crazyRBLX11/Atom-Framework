@@ -15,6 +15,7 @@ local AtomMain = {}
 local AtomRoot = script.Parent.Parent
 AtomRoot.Parent = game:GetService("ReplicatedStorage")
 
+local starting: boolean = false
 local started: boolean = false
 
 -- Set Important Directories
@@ -23,11 +24,12 @@ local Controllers : Folder  = AtomRoot.Controllers
 local Components : Folder = AtomRoot.Components
 local Packages = AtomRoot:WaitForChild("Packages")
 
--- Overwrite Functions
 -- local ModuleLoader = require(script.Parent.Utils.ModuleLoader) -- Needed for custom require.
---[[local function require(Directory:Instance, ScriptName:string)
-	return ModuleLoader:require(Directory, ScriptName)
-end ]] -- Removed while I try fix the Intellisense issues it causes.
+--[[
+	local function require(Directory:Instance, ScriptName:string)
+		return ModuleLoader:require(Directory, ScriptName)
+	end
+]] -- Removed while I try fix the Intellisense issues it causes.
 
 function SubTick()
 	return tick() / 2
@@ -40,7 +42,6 @@ local Promise = require(Packages.Promise)
 -- local ProfileService = require(Packages.ProfileService)
 -- local Sourceesque = require(Packages.Sourceesque)
 -- local Warp = require(Packages.Warp)
--- local Switch, case, default = unpack(require(Packages.Switch))
 
 -- Make references for Repositories.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -62,17 +63,15 @@ ErrorSignal:Connect(function(message)
 end)
 
 --[[
-Internal clean function.
+Internal and external clean function.
 
 Run the function Clean()
 
-This function can be used anywhere internally and should 
-be used like the following:
 function YourFunction(YourFunctionsParmaters)
-	local YourFunctionsJanitor = Janitor.new()
+	local YourJanitor = Janitor.new()
 	-- Your Function's Code
-	YourFunctionsJanitor:Add(YourFunctionsInstance)
-	Clean(YourFunctionsJanitor)
+	YourJanitor:Add(YourFunctionsInstance)
+	AtomMain.Clean(YourJanitor)
 end
 
 ]]
@@ -87,27 +86,15 @@ function AtomMain.Clean(WorkingJanitor)
 	return "Cleaned."
 end
 
---[[
-Start the framework.
-
-Require the ModuleScript and run this function ONCE
-to set up the framework for everything else.
-
-This function is located in the customizable BootStrapper
-parented under this ModuleScript and should be used like 
-the following:
-local Atom = require(script.Parent)
-Atom.Start()
-
-]]
 function AtomMain.Start()
-	if started then 
-		return Promise.reject("Atom has already started.") 
-	end
 	if _VERSION ~= "Luau" then 
 		ErrorSignal:Fire("Atom can't run on non Luau Runtimes.") 
 		return 
 	end
+	if starting or started then 
+		return Promise.reject("Atom has already started.") 
+	end
+	starting = true
 
 	local StartTick = tick()
 	local StartSubTick = SubTick()
@@ -120,11 +107,6 @@ function AtomMain.Start()
 		Services.Parent = ServerStorage
 		Controllers.Parent = ReplicatedStorage
 		Components.Parent = ReplicatedStorage
-
-		-- Auto Installer.
-		-- Reads through the Atom Root Directory to find files before checking the
-		-- Cleanable attribute. If the attribute is true the file will be cleaned and if it's
-		-- false then it will be left alone.
 
 		local MaxFolderItterations = 4
 		local CurrentFolderItterations = 0
@@ -173,6 +155,7 @@ function AtomMain.Start()
 		print(Clean(InitJanitor))
 		resolve(Promise.all(servicesInitPromises))
 	end):andThen(function()
+		starting = false
 		started = true
 		local EndTick = tick()
 		local EndSubTick = SubTick()
@@ -189,7 +172,7 @@ function AtomMain.GetService(ServiceName: string)
 		if v.ClassName ~= "ModuleScript" and v.Name ~= ServiceName then 
 			continue 
 		end
-		return require(Services:WaitForChild(ServiceName))
+		return require(ServicesService:WaitForChild(ServiceName))
 	end
 end
 
@@ -212,7 +195,7 @@ end
 local Core = script.Parent.Core
 
 return {
-	versiondetails = { major = 0, minor = 9, isrelease = false },
+	versiondetails = { major = 1, minor = 0, isrelease = true },
 	AtomRoot = AtomRoot,
 	Core = AtomRoot.Atom.Core,
 	Util = AtomRoot.Atom.Utils,
